@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visualizador 3D - Selector de Texturas</title>
+    
+    <!-- Importar model-viewer -->
+    <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
+    
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f4f4f9;
+            font-family: Arial, sans-serif;
+        }
+        model-viewer {
+            width: 80%;
+            height: 450px;
+            background-color: #ffffff;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            border-radius: 12px;
+        }
+        .controls {
+            margin-top: 20px;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            border: none;
+            border-radius: 8px;
+            background-color: #333;
+            color: #fff;
+            transition: background 0.3s ease;
+        }
+        button:hover {
+            background-color: #555;
+        }
+        /* Estilo diferenciado para el botón de restaurar original */
+        button.reset {
+            background-color: #888;
+        }
+        button.reset:hover {
+            background-color: #666;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Visualizador 3D -->
+    <model-viewer 
+        id="espada-viewer"
+        src="Espada.glb" 
+        alt="Espada 3D interactiva" 
+        auto-rotate 
+        camera-controls 
+        shadow-intensity="1">
+    </model-viewer>
+
+    <!-- Botones interactivos -->
+    <div class="controls">
+        <button onclick="cambiarTexturaAcero('Texturas/Cobre.jpg')">Cobre</button>
+        <button onclick="cambiarTexturaAcero('Texturas/Cobre_arrugado.jpg')">Cobre Arrugado</button>
+        <button onclick="cambiarTexturaAcero('Texturas/Textura_pasto.jpg')">Pasto</button>
+        <!-- Botón para regresar a la textura original de acero -->
+        <button class="reset" onclick="cambiarTexturaAcero('Texturas/Acero.jpg')">Original (Acero)</button>
+    </div>
+
+    <script>
+        const modelViewer = document.querySelector('#espada-viewer');
+
+        async function cambiarTexturaAcero(rutaImagen) {
+            // Esperar a que el modelo cargue por completo
+            await modelViewer.updateComplete;
+
+            // Buscamos estrictamente el material llamado "Acero"
+            const material = modelViewer.model.materials.find(m => m.name === "Acero");
+
+            if (material) {
+                // Crear y aplicar la textura desde la ruta especificada
+                const textura = await modelViewer.createTexture(rutaImagen);
+                material.pbrMetallicRoughness.baseColorTexture.setTexture(textura);
+                console.log("Textura cambiada a:", rutaImagen);
+            } else {
+                console.warn("No se encontró el material 'Acero' en el modelo 3D.");
+            }
+        }
+    </script>
+
+</body>
+</html>
